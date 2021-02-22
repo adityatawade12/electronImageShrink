@@ -1,13 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <!-- <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' ">
     <title>Imageshrink</title>
+    <link rel="stylesheet" href="css/all.min.css">
+    <link rel="stylesheet" href="css/materialize.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
-<body style="background-color: blue;">
-    <h1>Imageshrink12</h1>
+
+<body>
+    <div class="container center-algn">
+        <h3><i class="fas fa-images"></i>Imageshrink</h3>
+
+        <p>Choose an image to resize</p>
+        <form>
+            <div class="file-field image-field">
+                <div class="btn">
+                    <span>Browse</span>
+                    <input type="file" id="img">
+                </div>
+                <div class="file-path-wrapper">
+                    <input type="text" class="file-path validate" placeholder="Upload Image">
+                </div>
+            </div>
+            <p>
+                <strong>Quality:</strong>
+                <em>Lower the quality, lower the image size</em>
+
+            </p>
+            <p class="range-field">
+                <input type="range" min="0" max="100" id="slider">
+            </p>
+            <input type="submit" class="btn black" value="Resize">
+        </form>
+        <div class="card output">
+            <div class="card-content">
+                Output Path: <span id="output-path"></span>
+            </div>
+        </div>
+     
+    </div>
 </body>
+
 </html>
