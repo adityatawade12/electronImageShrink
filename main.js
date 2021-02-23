@@ -1,14 +1,14 @@
 const path = require('path');
 const os=require('os');
 
-const {app,BrowserWindow,Menu,globalShortcut,ipcMain, shell}= require("electron");
+const {app,BrowserWindow,Menu,globalShortcut,ipcMain, shell,dialog}= require("electron");
 const imagemin = require('imagemin');
 const imageminMozjpeg = require('imagemin-mozjpeg');
 const imageminPngquant = require('imagemin-pngquant');
 const slash = require('slash');
 const log =require('electron-log'); 
 //Set dev enc
-process.env.NODE_ENV='development';
+process.env.NODE_ENV='production';
 const isDev = process.env.NODE_ENV!=='production' ? true:false;
 
 //Check os
@@ -16,7 +16,7 @@ const isWin = process.platform =='win32'?true:false
 
 let mainWindow
 let aboutWindow
-
+let destin
 function createMainWindow(){
      mainWindow = new BrowserWindow({
         title:"ImageShrink",
@@ -52,12 +52,30 @@ app.on('ready',()=>{
 });
 
 ipcMain.on('image:minimize',(e,options)=>{
-  options.dest=path.join(os.homedir(),'imageshrink');
-  shrinkImage(options)
-  console.log(options)
+  
+    options.dest=destin;
+    shrinkImage(options)
+        
+  })
+
+ipcMain.on("path:select",(e)=>{
+
+    dialog.showOpenDialog({
+      properties: ["openDirectory","openFile"]
+    }).then(result=>{
+      
+      
+      destin=slash(result.filePaths[0])
+      mainWindow.webContents.send("path:done",slash(result.filePaths[0]))
+    }).catch(e=>{
+      log.info(e)
+    })
+ 
+
 })
 
 async function shrinkImage({imgPath,quality,dest}){
+ if(dest!=undefined){
   try {
     const pngQuality=quality/100;
     const files= await imagemin([slash(imgPath)],{
@@ -70,12 +88,17 @@ async function shrinkImage({imgPath,quality,dest}){
       ]
     })
    
-    log.info(files)
+    // log.info(files)
     shell.openPath(dest)
     mainWindow.webContents.send("image:done")
   } catch (error) {
-    console.log(error)
+    log.info(error)
   }
+ }else{
+  mainWindow.webContents.send("path:none")
+  
+ }
+
 }
 const menu =[
     

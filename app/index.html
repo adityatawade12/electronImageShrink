@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="css/all.min.css">
     <link rel="stylesheet" href="css/materialize.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        #img{
+            overflow: hidden;
+        }
+    </style>
 </head>
 
 <body>
@@ -24,7 +29,7 @@
                     <input type="file" id="img">
                 </div>
                 <div class="file-path-wrapper">
-                    <input type="text" class="file-path validate" placeholder="Upload Image">
+                    <input type="text" class="file-path validate" placeholder="Upload Image" >
                 </div>
             </div>
             <p>
@@ -38,12 +43,14 @@
             <input type="submit" class="btn black" value="Resize">
         </form>
         <div class="card output">
-            <div class="card-content">
-                Output Path: <span id="output-path"></span>
+            <div class="card-content" id="path-div">
+                <!-- <input type="file" webkitdirectory /> -->
+                <span id="output-path">Select Output Path </span>
             </div>
         </div>
      
     </div>
+   
     <script src="js/materialize.min.js"></script>
     <script src="js/renderer.js"></script>
 </body>
