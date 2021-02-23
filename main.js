@@ -1,4 +1,11 @@
-const {app,BrowserWindow,Menu,globalShortcut}= require("electron");
+const path = require('path');
+const os=require('os');
+
+const {app,BrowserWindow,Menu,globalShortcut,ipcMain, shell}= require("electron");
+const imagemin = require('imagemin');
+const imageminMozjpeg = require('imagemin-mozjpeg');
+const imageminPngquant = require('imagemin-pngquant');
+const slash = require('slash');
 //Set dev enc
 process.env.NODE_ENV='development';
 const isDev = process.env.NODE_ENV!=='production' ? true:false;
@@ -13,9 +20,12 @@ function createMainWindow(){
      mainWindow = new BrowserWindow({
         title:"ImageShrink",
         width:500,
-        height:700,
+        height:600,
         icon: './assets/icons/Icon_256x256.png',
-        resizable:isDev?true:false
+        resizable:isDev?true:false,
+        webPreferences:{
+          nodeIntegration:true,
+        }
     })
     mainWindow.loadFile('app/index.html');
 }
@@ -40,6 +50,31 @@ app.on('ready',()=>{
     mainWindow.on('ready',()=>mainWindow=null)
 });
 
+ipcMain.on('image:minimize',(e,options)=>{
+  options.dest=path.join(os.homedir(),'imageshrink');
+  shrinkImage(options)
+  console.log(options)
+})
+
+async function shrinkImage({imgPath,quality,dest}){
+  try {
+    const pngQuality=quality/100;
+    const files= await imagemin([slash(imgPath)],{
+      destination: dest,
+      plugins:[
+        imageminMozjpeg({quality}),
+        imageminPngquant({
+          quality:[pngQuality,pngQuality]
+        })
+      ]
+    })
+    console.log(files)
+    shell.openPath(dest)
+    mainWindow.webContents.send("image:done")
+  } catch (error) {
+    console.log(error)
+  }
+}
 const menu =[
     
         {role:"fileMenu"},
